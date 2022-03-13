@@ -34,26 +34,29 @@ const pendingQuestions = document.querySelector(".pendingQuestions");
 document.getElementById("next").setAttribute("onclick","onNextClick()");
 pendingQuestions.textContent = index+1;
 
-showQuestions(index);
-// console.log(questions);
+showCurrentQuestion(index);
 
-function showQuestions(index){
+function prepareChoices(questionIndex) {
+    const question = questions[questionIndex];
+    const choices = question.choices;
+    let newChoices = '';
+    for (let index = 0; index < choices.length; index++) {
+        const choice = choices[index];
+        newChoices = newChoices + '<div class="choice"><span>'+ choice +'</span></div>';
+    }
+    return newChoices
+}
 
-    let displayQuestion = '<span>' + "Q" + (index+1) + "." + questions[index].question +'</span>';
-    let displayChoices = '<div class="choice"><span>'+ questions[index].choices[0] +'</span></div>'
-    + '<div class="choice"><span>'+ questions[index].choices[1] +'</span></div>'
-    + '<div class="choice"><span>'+ questions[index].choices[2] +'</span></div>'
-    + '<div class="choice"><span>'+ questions[index].choices[3] +'</span></div>'
-    + '<div class="choice"><span>'+ questions[index].choices[4] +'</span></div>';
+function showCurrentQuestion(questionIndex){
+    const displayQuestion = '<span>' + "Q" + (questionIndex+1) + "." + questions[questionIndex].question +'</span>';
+    const displayChoices = prepareChoices(questionIndex)
     questionText.innerHTML = displayQuestion;
     choicesList.innerHTML = displayChoices;
-
     const selectedChoices = document.querySelectorAll(".choice");
     console.log (selectedChoices);
     for(i=0; i < selectedChoices.length; i++){
         selectedChoices[i].setAttribute("onclick", "selectedUserChoice(this)"); 
     }
-    
 }
 
 function selectedUserChoice(answer)
@@ -83,7 +86,7 @@ function onNextClick(){
     console.log(index+1);
     if (index < questions.length)
     {
-        showQuestions(index);
+        showCurrentQuestion(index);
         pendingQuestions.textContent = index+1;
 
     }
