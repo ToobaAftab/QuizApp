@@ -25,16 +25,16 @@
         correctAnswer: 44
     }
 ];
-var index = 0;
+var questionIndex = 0;
 var totalScore = 0;
 const questionText = document.querySelector(".question_text");
 const choicesList = document.querySelector(".choices_list");
 const pendingQuestions = document.querySelector(".pendingQuestions");
 
 document.getElementById("next").setAttribute("onclick","onNextClick()");
-pendingQuestions.textContent = index+1;
+pendingQuestions.textContent = questionIndex+1;
 
-showCurrentQuestion(index);
+showCurrentQuestion(questionIndex);
 
 function prepareChoices(questionIndex) {
     const question = questions[questionIndex];
@@ -61,23 +61,27 @@ function showCurrentQuestion(questionIndex){
 
 function selectedUserChoice(answer)
 {
-    is_selected = true;
-    if(is_selected == true){
-        answer.classList.add("selected");
-        var userAnswer = answer.textContent;
-        var actualAnswer = questions[index].correctAnswer;
-        var allChoices = questions[index].choices.length;
-        for(i=0; i < allChoices; i++){
-            choicesList.choices[i].classList.add("disabled");
-            //console.log(questions[index].choices[i].classList.Add('disbale'));
+    //answer.classList.add("selected");
+    var userAnswer = answer.textContent;
+    var currentQuestion = questions[questionIndex];
+    var actualAnswer = currentQuestion.correctAnswer;
+    var allChoices = currentQuestion.choices.length;
+
+    for (let i=0; i<=allChoices; i++){
+        if (userAnswer==currentQuestion.choices[i]){
+            currentIndex = i;
+            break;
         }
-        
     }
+    showCurrentQuestion(questionIndex);
     
-    if (userAnswer==actualAnswer){
-        totalScore++;
+    while (currentQuestion.choices.length){
+        showCurrentQuestion(questionIndex);
+        console.log(currentQuestion.choices);
     }
-    console.log(answer);
+    if (userAnswer==actualAnswer){
+        totalScore++;   
+    }
 
 }
 
