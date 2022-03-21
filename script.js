@@ -32,14 +32,20 @@
 ];
 var questionIndex = 0;
 var totalScore = 0;
+var userAnswer;
+let counter;
+let timerValue = 15;
 const questionText = document.querySelector(".question_text");
 const choicesList = document.querySelector(".choices_list");
 const pendingQuestions = document.querySelector(".pendingQuestions");
+const timerText = document.querySelector(".time-left");
+const timerSeconds = document.querySelector(".seconds");
 
 document.getElementById("next").setAttribute("onclick","onNextClick()");
 pendingQuestions.textContent = questionIndex+1;
 
 showCurrentQuestion(questionIndex);
+startTimer(timerValue);
 
 function prepareChoices(questionIndex) {
     const question = questions[questionIndex];
@@ -58,7 +64,6 @@ function showCurrentQuestion(questionIndex){
     questionText.innerHTML = displayQuestion;
     choicesList.innerHTML = displayChoices;
     const selectedChoices = document.querySelectorAll(".choice");
-    console.log (selectedChoices);
     for(i=0; i < selectedChoices.length; i++){
         selectedChoices[i].setAttribute("onclick", `selectedUserChoice(${i})`); 
     }
@@ -66,43 +71,71 @@ function showCurrentQuestion(questionIndex){
 
 function selectedUserChoice(choosedChoiceIndex)
 {
-  console.log('selectedUserChoice==>',choosedChoiceIndex)
-    //answer.classList.add("selected");
+  console.log('selectedUserChoice==>',choosedChoiceIndex);
     var currentQuestion = questions[questionIndex];
-    var actualAnswer = currentQuestion.correctAnswer;
-    var userAnswer = currentQuestion.choices[choosedChoiceIndex];
+    userAnswer = currentQuestion.choices[choosedChoiceIndex];
     currentQuestion.userAnswer = choosedChoiceIndex;
-    // var allChoices = currentQuestion.choices.length;
 
-    // for (let i=0; i<=allChoices; i++){
-    //     if (userAnswer==currentQuestion.choices[i]){
-    //         currentIndex = i;
-    //         break;
-    //     }
-    // }
     showCurrentQuestion(questionIndex);
+}
+
+function calculateScore(){
     
-    // while (currentQuestion.choices.length){
-    //     showCurrentQuestion(questionIndex);
-    //     console.log(currentQuestion.choices);
-    // }
+    var actualAnswer = questions[questionIndex].correctAnswer;
     if (userAnswer === actualAnswer){
         totalScore++;   
     }
-
 }
 
 function onNextClick(){
-    index++;
-    console.log(index+1);
-    if (index < questions.length)
+    
+    calculateScore();
+    questionIndex++;
+    if (questionIndex < questions.length)
     {
-        showCurrentQuestion(index);
-        pendingQuestions.textContent = index+1;
+        showCurrentQuestion(questionIndex);
+        pendingQuestions.textContent = questionIndex+1;
 
     }
-    else
+    else if (questionIndex == questions.length)
     {
-        console.log(totalScore);
+        displayTotalScore();
+    }
+}
+
+function displayTotalScore(){
+    clearInterval(counter);
+    displayingTotalScoreBlock = document.querySelector(".innerContainer");
+    displayingTotalScoreBlock.innerHTML = `<div class="totalScore">
+    <h3>Your Total Score</h3><span>${totalScore}</span></div>
+    <div class="final_buttons"><button class="restart" onclick="onRestartClick()">Restart Quiz</button></div>`;
+}
+
+function settingEndQuizButtons(){
+    const restartQuiz = document.querySelector("restart");
+    const quitQuiz = document.getElementById("quit");
+    restartQuiz.setAttribute("onclick","onRestartClick()");
+}
+
+function onRestartClick(){
+    window.location.reload();
+    showCurrentQuestion(questionIndex);
+}
+
+function startTimer(time){
+    counter = setInterval(timer,1000);
+    function timer(){
+        timerSeconds.textContent = time;
+        time--;
+        if (time<9){
+            let addZero = timerSeconds.textContent;
+            timerSeconds.textContent = "0" + addZero;
+        }
+        if (time<0){
+            clearInterval(counter);
+            // timerText.textContent = "Time Finished";
+            timerText.innerHTML = "Time Finished";
+            displayTotalScore();
+        }
     }
 }
